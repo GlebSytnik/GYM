@@ -1,71 +1,50 @@
+import dao.CoachDAO;
 import dao.exception.DAOException;
 import dao.impl.mysql.MysqlCoachDAO;
-import db.ConnectionHolder;
-import db.DBUtil;
 import entity.Coach;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 import static org.junit.Assert.*;
 
 public class CoachesDaoTest {
-    private DBUtil dbUtils;
-   // private CoachDaoImpl coachDaoImpl;
-    private MysqlCoachDAO coachDao;
-    private Connection connection;
-    private PreparedStatement preparedStatement;
-    private Statement statement;
-    private ResultSet resultSet;
-    private ConnectionHolder connectionHolder;
-
-
+    private CoachDAO coachDao = new MysqlCoachDAO();
     @Before
-    public void setUp() throws Exception {
-        connection = ConnectionHolder.getConnection();
+    public void beforeClass() throws Exception {
+       MysqlCoachDAO coachDAO = new MysqlCoachDAO();
+        coachDao.delete(21);
     }
-
-    @After
-    public void tearDown() throws Exception {
-
-    }
-
 
     @Test
-    public void testGetCoach() throws DAOException {
-        coachDao = new MysqlCoachDAO(connection);
+    public void testGetCoach() {
         coachDao.read(1);
     }
 
-    @Test
-    public void testInsertCoach() throws DAOException {
-        coachDao = new MysqlCoachDAO(connection);
+      @Test
+  public void testInsertCoach() throws  DAOException {
         Coach coach = new Coach();
-        coach.setId(4);
         coach.setuserdetailsId(4);
         coach.setTimetables_id(2);
-
-
+        coach.setQualification("Высшая");
         coachDao.create(coach);
-        assertNotNull("we added someone", coachDao.read(4));
+        try {
+            assertNotNull(coachDao.read(5));
+        }
+        catch (AssertionError e){
+            e.printStackTrace();
+        }
     }
 
     @Test
-    public void testUpdateCoach() throws DAOException {
-        coachDao = new MysqlCoachDAO(connection);
+    public void testUpdateCoach() {
         coachDao.read(2);
 
         Coach coach = new Coach();
         coach.setId(2);
         coach.setTimetables_id(2);
         coach.setuserdetailsId(4);
-        coach.setQualification("pidar");
+        coach.setQualification("Средняя");
 
         coachDao.update(coach);
         assertEquals(coachDao.read(2).getId(), coach.getId());
@@ -75,8 +54,7 @@ public class CoachesDaoTest {
     }
 
     @Test
-    public void testDeleteCoach() throws DAOException {
-        coachDao = new MysqlCoachDAO(connection);
+    public void testDeleteCoach() {
         coachDao.read(3);
 
         coachDao.delete(3);

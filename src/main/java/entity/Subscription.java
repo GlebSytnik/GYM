@@ -1,14 +1,8 @@
 package entity;
 
-
-import dao.exception.DAOException;
-
 public class Subscription  extends Entity {
 
     private String typeSubscription;
-
-
-
 
     public String getTypesubscription() {
         return typeSubscription;
@@ -17,6 +11,5 @@ public class Subscription  extends Entity {
     public void setTypesubscription(String typesubscription) {
         this.typeSubscription = typesubscription;
     }
-
 
 }

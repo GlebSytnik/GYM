@@ -1,8 +1,5 @@
 package entity;
 
-import dao.exception.DAOException;
-
-import java.util.List;
 import java.util.Objects;
 
 public class Coach extends Entity  {
@@ -28,8 +25,6 @@ public class Coach extends Entity  {
         this.qualification = qualification;
     }
 
-
-
     public int getTimetablesid() {
         return timetablesId;
     }
@@ -37,9 +32,7 @@ public class Coach extends Entity  {
     public void setTimetables_id(int timetablesId) {
         this.timetablesId = timetablesId;
     }
-    // public List<CoachNumber> getNumbers() {
-    // return numbers;
-    // }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,5 +1,6 @@
 package dao.impl.mysql;
 
+import dao.VisitsDAO;
 import dao.exception.DAOException;
 import db.ConnectionHolder;
 import db.DBUtil;
@@ -15,7 +16,7 @@ public class MysqlVisitsDAO implements VisitsDAO {
     private static MysqlVisitsDAO visitsDAO;
     private static final Logger LOG = Logger.getLogger(MysqlUserDetailsDAO.class.getName());
 
-    private static final String CREATE_VISITS = "INSERT INTO visits(id,training_idt_raining_fk,coach_idcoach_fk,customers_id)VALUES(?,?,?,?)";
+    private static final String CREATE_VISITS = "INSERT INTO visits(training_idt_raining_fk,coach_idcoach_fk,customers_id)VALUES(?,?,?)";
     private static final String DELETE_BY_ORDER_VISITS = "DELETE  FROM visits WHERE id=?";
     private static final String GET_VISITS = "SELECT * FROM visits WHERE id = ?";
     private static final String UPDATE_VISITS= "UPDATE visits SET  training_idt_raining_fk=?,coach_idcoach_fk=?,customers_id=? WHERE id=?";
@@ -37,17 +38,15 @@ public class MysqlVisitsDAO implements VisitsDAO {
             connection= ConnectionHolder.getConnection();
             preparedStatement=connection.prepareStatement(CREATE_VISITS,preparedStatement.RETURN_GENERATED_KEYS);
             int k=0;
-            preparedStatement.setInt(++k,visits.getId());
             preparedStatement.setInt(++k,visits.getTrainingId());
             preparedStatement.setInt(++k,visits.getCoachId());
             preparedStatement.setInt(++k,visits.getCustomersId());
-
             preparedStatement.executeUpdate();
             resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
                 key = resultSet.getInt(1);
             } else {
-                throw new SQLException("Creating visits failed, no ID obtained.");
+                throw new DAOException("Creating visits failed, no ID obtained.");
             }
 
         } catch (SQLException e){
@@ -95,14 +94,14 @@ public class MysqlVisitsDAO implements VisitsDAO {
             connection=ConnectionHolder.getConnection();
             preparedStatement = connection.prepareStatement(UPDATE_VISITS);
             int k = 0;
-
             preparedStatement.setInt(++k,visits.getTrainingId());
             preparedStatement.setInt(++k,visits.getCoachId());
             preparedStatement.setInt(++k,visits.getCustomersId());
             preparedStatement.setInt(++k,visits.getId());
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            LOG.info("Can not update visits." );
+            throw new DAOException(e.getMessage());
 
         }finally {
             DBUtil.closeStatement(preparedStatement);
@@ -119,7 +118,8 @@ public class MysqlVisitsDAO implements VisitsDAO {
             preparedStatement.setInt(1, key);
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            LOG.info("Can not delete visit." );
+            throw new DAOException(e.getMessage());
         }finally {
             DBUtil.closeStatement(preparedStatement);
         }

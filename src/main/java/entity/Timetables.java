@@ -1,16 +1,11 @@
 package entity;
 
-import dao.exception.DAOException;
-
 import java.util.Objects;
 
 public class Timetables extends Entity {
 
     private String dataTime;
     private String dataTime2;
-
-
-
 
     public String getDataTime() {
         return dataTime;

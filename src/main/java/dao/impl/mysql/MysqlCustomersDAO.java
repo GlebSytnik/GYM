@@ -1,5 +1,6 @@
 package dao.impl.mysql;
 
+import dao.CustomersDAO;
 import dao.exception.DAOException;
 import db.ConnectionHolder;
 import db.DBUtil;
@@ -15,7 +16,7 @@ public class MysqlCustomersDAO implements CustomersDAO {
     private static MysqlCustomersDAO customersDAO;
     private static final Logger LOG = Logger.getLogger(MysqlCustomersDAO.class.getName());
 
-    private static final String CREATE_CUSTOMERS = "INSERT INTO customers(id,height,weight,subscription_idsubscription_fk,user_details_iduser_details,coach_idcoach)VALUES(?,?,?,?,?,?)";
+    private static final String CREATE_CUSTOMERS = "INSERT INTO customers(height,weight,subscription_idsubscription_fk,user_details_iduser_details,coach_idcoach)VALUES(?,?,?,?,?)";
     private static final String DELETE_BY_ORDER_CUSTOMERS = "DELETE  FROM customers WHERE id=?";
     private static final String GET_CUSTOMERS = "SELECT * FROM сustomers WHERE id = ?";
     private static final String UPDATE_CUSTOMERS= "UPDATE customers SET  height=?,weight=?,subscription_idsubscription_fk=?,user_details_iduser_details=?,coach_idcoach=? WHERE id=?";
@@ -37,18 +38,16 @@ public class MysqlCustomersDAO implements CustomersDAO {
             connection=ConnectionHolder.getConnection();
             preparedStatement=connection.prepareStatement(CREATE_CUSTOMERS,preparedStatement.RETURN_GENERATED_KEYS);
             int k=0;
-            preparedStatement.setInt(++k,customers.getId());
             preparedStatement.setInt(++k,customers.getHeight());
             preparedStatement.setInt(++k,customers.getWeight());
             preparedStatement.setInt(++k,customers.getSubscriptionId());
             preparedStatement.setInt(++k,customers.getUserDetailsId());
-            preparedStatement.setInt(++k,customers.getCoachId());
             preparedStatement.executeUpdate();
             resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
                 key = resultSet.getInt(1);
             } else {
-                throw new SQLException("Creating customer failed, no ID obtained.");
+                throw new DAOException("Creating customer failed, no ID obtained.");
             }
 
         } catch (SQLException e){
@@ -123,7 +122,8 @@ public class MysqlCustomersDAO implements CustomersDAO {
             preparedStatement.setInt(1, key);
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            LOG.info("Can not delete customers." );
+            throw new DAOException(e.getMessage());
         }finally {
             DBUtil.closeStatement(preparedStatement);
         }

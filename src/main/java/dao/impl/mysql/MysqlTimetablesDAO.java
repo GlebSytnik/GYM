@@ -1,5 +1,6 @@
 package dao.impl.mysql;
 
+import dao.TimetablesDAO;
 import dao.exception.DAOException;
 import db.ConnectionHolder;
 import db.DBUtil;
@@ -15,7 +16,7 @@ public class MysqlTimetablesDAO implements TimetablesDAO {
     private static MysqlTimetablesDAO timetablesDAO;
     private static final Logger LOG = Logger.getLogger(MysqlSubscriptionDAO.class.getName());
 
-    private static final String CREATE_TIMETABLES = "INSERT INTO timetables(id,datatime,datatime_2)VALUES(?,?,?)";
+    private static final String CREATE_TIMETABLES = "INSERT INTO timetables(datatime,datatime_2)VALUES(?,?)";
     private static final String DELETE_BY_ORDER_TIMETABLES = "DELETE  FROM timetables WHERE id=?";
     private static final String GET_TIMETABLES = "SELECT * FROM timetables WHERE id = ?";
     private static final String UPDATE_TIMETABLES= "UPDATE timetables SET  datatime=?,datatime_2=? WHERE id=?";
@@ -37,7 +38,7 @@ public class MysqlTimetablesDAO implements TimetablesDAO {
             connection=ConnectionHolder.getConnection();
             preparedStatement=connection.prepareStatement(CREATE_TIMETABLES,preparedStatement.RETURN_GENERATED_KEYS);
             int k=0;
-            preparedStatement.setInt(++k,timetables.getId());
+
             preparedStatement.setString(++k,timetables.getDataTime());
             preparedStatement.setString(++k,timetables.getDataTime2());
             preparedStatement.executeUpdate();
@@ -46,7 +47,7 @@ public class MysqlTimetablesDAO implements TimetablesDAO {
             if (resultSet.next()) {
                 key = resultSet.getInt(1);
             } else {
-                throw new SQLException("Creating timetables failed, no ID obtained.");
+                throw new DAOException("Creating timetables failed, no ID obtained.");
             }
 
         } catch (SQLException e){
@@ -98,7 +99,8 @@ public class MysqlTimetablesDAO implements TimetablesDAO {
             preparedStatement.setInt(++k,timetables.getId());
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            LOG.info("Can not update timetables." );
+            throw new DAOException(e.getMessage());
 
         }finally {
             DBUtil.closeStatement(preparedStatement);
@@ -115,7 +117,8 @@ public class MysqlTimetablesDAO implements TimetablesDAO {
             preparedStatement.setInt(1, key);
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            LOG.info("Can not delete timetables." );
+            throw new DAOException(e.getMessage());
         }finally {
             DBUtil.closeStatement(preparedStatement);
         }

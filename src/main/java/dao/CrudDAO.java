@@ -14,7 +14,7 @@ public interface CrudDAO<T,PK> {
      * @return ID created entity.
      * @throws DAOException
      */
-    PK create(T object) throws  DAOException;
+    PK create(T object);
 
     /**
      * Read entity to the database by ID.
@@ -25,7 +25,7 @@ public interface CrudDAO<T,PK> {
      * @return Entity.
      * @throws DAOException
      */
-    T read(PK key) throws  DAOException;
+    T read(PK key);
 
     /**
      * Update entity to the database.
@@ -35,7 +35,7 @@ public interface CrudDAO<T,PK> {
      *
      * @throws DAOException
      */
-    void update(T object) throws  DAOException;
+    void update(T object);
 
     /**
      * Deletes entity from the database.
@@ -45,7 +45,7 @@ public interface CrudDAO<T,PK> {
      *
      * @throws DAOException
      */
-    void delete(PK key) throws DAOException;
+    void delete(PK key);
 
 
 }

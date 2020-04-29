@@ -8,8 +8,6 @@ public class Visits extends Entity {
     private  int customersId;
     private int coachId;
 
-
-
     public int getTrainingId() {
         return trainingId;
     }

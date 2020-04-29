@@ -1,5 +1,6 @@
 package dao.impl.mysql;
 
+import dao.SubscriptionDAO;
 import dao.exception.DAOException;
 import db.ConnectionHolder;
 import db.DBUtil;
@@ -15,7 +16,7 @@ public class MysqlSubscriptionDAO implements SubscriptionDAO {
     private static MysqlSubscriptionDAO subscriptionDAO;
     private static final Logger LOG = Logger.getLogger(MysqlSubscriptionDAO.class.getName());
 
-    private static final String CREATE_SUBSCRIPTION = "INSERT INTO subscription(id,type_subscription)VALUES(?,?)";
+    private static final String CREATE_SUBSCRIPTION = "INSERT INTO subscription(type_subscription)VALUES(?)";
     private static final String DELETE_BY_ORDER_SUBSCRIPTION = "DELETE  FROM subscription WHERE id=?";
     private static final String GET_SUBSCRIPTION = "SELECT * FROM subscription WHERE id = ?";
     private static final String UPDATE_SUBSCRIPTION= "UPDATE subscription SET  type_subscription=?, WHERE id=?";
@@ -37,13 +38,14 @@ public class MysqlSubscriptionDAO implements SubscriptionDAO {
             connection= ConnectionHolder.getConnection();
             preparedStatement=connection.prepareStatement(CREATE_SUBSCRIPTION,preparedStatement.RETURN_GENERATED_KEYS);
             int k=0;
-            preparedStatement.setInt(++k,subscription.getId());
+
             preparedStatement.setString(++k,subscription.getTypesubscription());
             resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
                 key = resultSet.getInt(1);
             } else {
-                throw new SQLException("Creating customer failed, no ID obtained.");
+                LOG.info("Create new subscription");
+                throw new DAOException("Creating customer failed, no ID obtained.");
             }
 
         } catch (SQLException e){
@@ -93,7 +95,8 @@ public class MysqlSubscriptionDAO implements SubscriptionDAO {
             preparedStatement.setInt(++k,subscription.getId());
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            LOG.info("Can not update subscription." );
+            throw new DAOException(e.getMessage());
 
         }finally {
             DBUtil.closeStatement(preparedStatement);
@@ -110,8 +113,10 @@ public class MysqlSubscriptionDAO implements SubscriptionDAO {
             preparedStatement.setInt(1, key);
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
-        }finally {
+            LOG.info("Can not delete coach." );
+            throw new DAOException(e.getMessage());
+        }
+        finally {
             DBUtil.closeStatement(preparedStatement);
         }
 

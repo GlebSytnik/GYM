@@ -1,5 +1,6 @@
 package dao.impl.mysql;
 
+import dao.UserDetailsDAO;
 import dao.exception.DAOException;
 import db.ConnectionHolder;
 import db.DBUtil;
@@ -15,7 +16,7 @@ public class MysqlUserDetailsDAO implements UserDetailsDAO {
     private static MysqlUserDetailsDAO userDetailsDAO;
     private static final Logger LOG = Logger.getLogger(MysqlUserDetailsDAO.class.getName());
 
-    private static final String CREATE_USER_DETAILS = "INSERT INTO user_details(id,password,phone,avatar_referense,login,first_name,last_name,age)VALUES(?,?,?,?,?,?,?,?)";
+    private static final String CREATE_USER_DETAILS = "INSERT INTO user_details(password,phone,avatar_referense,login,first_name,last_name,age)VALUES(?,?,?,?,?,?,?)";
     private static final String DELETE_BY_ORDER_USER_DETAILS = "DELETE  FROM user_details WHERE id=?";
     private static final String GET_USER_DETAILS = "SELECT * FROM user_details WHERE id = ?";
     private static final String UPDATE_USER_DETAILS= "UPDATE user_details SET  password=?,phone=?,avatar_referense=?,login=?,first_name=?,last_name=?,age=? WHERE id=?";
@@ -37,7 +38,7 @@ public class MysqlUserDetailsDAO implements UserDetailsDAO {
             connection= ConnectionHolder.getConnection();
             preparedStatement=connection.prepareStatement(CREATE_USER_DETAILS,preparedStatement.RETURN_GENERATED_KEYS);
             int k=0;
-            preparedStatement.setInt(++k,userDetails.getId());
+
             preparedStatement.setString(++k,userDetails.getPassword());
             preparedStatement.setString(++k,userDetails.getPhone());
             preparedStatement.setString(++k,userDetails.getAvatarReferense());
@@ -46,11 +47,13 @@ public class MysqlUserDetailsDAO implements UserDetailsDAO {
             preparedStatement.setString(++k,userDetails.getLastName());
             preparedStatement.setInt(++k,userDetails.getAge());
             preparedStatement.executeUpdate();
+
             resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
                 key = resultSet.getInt(1);
+               // preparedStatement.setInt();
             } else {
-                throw new SQLException("Creating userDetails failed, no ID obtained.");
+                throw new DAOException("Creating userDetails failed, no ID obtained.");
             }
 
         } catch (SQLException e){
@@ -112,7 +115,8 @@ public class MysqlUserDetailsDAO implements UserDetailsDAO {
             preparedStatement.setInt(++k,userDetails.getId());
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            LOG.info("Can not update userdetails." );
+            throw new DAOException(e.getMessage());
 
         }finally {
             DBUtil.closeStatement(preparedStatement);
@@ -129,7 +133,8 @@ public class MysqlUserDetailsDAO implements UserDetailsDAO {
             preparedStatement.setInt(1, key);
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            LOG.info("Can not delete userdetails." );
+            throw new DAOException(e.getMessage());
         }finally {
             DBUtil.closeStatement(preparedStatement);
         }

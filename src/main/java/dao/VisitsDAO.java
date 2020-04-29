@@ -1,4 +1,4 @@
-package dao.impl.mysql;
+package dao;
 
 import dao.CrudDAO;
 import entity.Visits;

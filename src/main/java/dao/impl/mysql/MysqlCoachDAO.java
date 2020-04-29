@@ -14,11 +14,9 @@ import java.util.logging.Logger;
 
 public class MysqlCoachDAO  implements CoachDAO {
     private static MysqlCoachDAO coachDAO;
-    private static Connection connection;
     private static final Logger LOG = Logger.getLogger(MysqlCoachDAO.class.getName());
 
-
-    private static final String CREATE_COACH = "INSERT INTO coach(id,qualification,user_details_iduser_details,timetables_id)VALUES(?,?,?,?)";
+    private static final String CREATE_COACH = "INSERT INTO coach(qualification,user_details_iduser_details,timetables_id)VALUES(?,?,?)";
     private static final String DELETE_BY_ORDER_COACH = "DELETE  FROM coach WHERE id=?";
     private static final String GET_COACH = "SELECT * FROM coach WHERE id = ?";
     private static final String UPDATE_COACH = "UPDATE coach SET  qualification=?,user_details_iduser_details=?,timetables_id=? WHERE id=?";
@@ -31,9 +29,6 @@ public class MysqlCoachDAO  implements CoachDAO {
     }
     public MysqlCoachDAO(){
     }
-    public MysqlCoachDAO(Connection connection) {
-        this.connection = connection;
-    }
 
     @Override
     public Integer create(Coach coach) throws DAOException {
@@ -45,7 +40,6 @@ public class MysqlCoachDAO  implements CoachDAO {
             connection= ConnectionHolder.getConnection();
             preparedStatement=connection.prepareStatement(CREATE_COACH,preparedStatement.RETURN_GENERATED_KEYS);
             int k=0;
-            preparedStatement.setInt(++k,coach.getId());
             preparedStatement.setString(++k,coach.getQualification());
             preparedStatement.setInt(++k,coach.getUserDetailsId());
             preparedStatement.setInt(++k,coach.getTimetablesid());
@@ -97,7 +91,7 @@ public class MysqlCoachDAO  implements CoachDAO {
     }
 
     @Override
-    public void update(Coach coach) throws DAOException  {
+    public void update(Coach coach) {
         PreparedStatement preparedStatement=null;
         Connection connection;
         try {
@@ -111,8 +105,8 @@ public class MysqlCoachDAO  implements CoachDAO {
             preparedStatement.setInt(++k,coach.getId());
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
-
+            LOG.info("Can not update");
+            throw new DAOException(e.getMessage(), e);
         }finally {
             DBUtil.closeStatement(preparedStatement);
         }
@@ -129,7 +123,8 @@ public class MysqlCoachDAO  implements CoachDAO {
             preparedStatement.setInt(1, key);
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            LOG.info("Can not delete coach." );
+            throw new DAOException(e.getMessage());
         }finally {
             DBUtil.closeStatement(preparedStatement);
         }

@@ -14,8 +14,6 @@ public class UserDetails extends Entity {
     private String lastName;
     private int age;
 
-
-
     public String getPassword() {
         return password;
     }

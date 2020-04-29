@@ -1,26 +1,14 @@
 package entity;
 
 
-import dao.exception.DAOException;
-
 import java.util.Objects;
 
 public class Customers extends Entity  {
-    private  int id;
     private  int height;
     private  int weight;
     private  int subscriptionId;
     private  int userDetailsId;
     private  int coachId;
-
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public int getHeight() {
         return height;

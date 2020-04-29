@@ -1,15 +1,10 @@
 package entity;
 
-
-import dao.exception.DAOException;
-
 import java.util.Objects;
 
 public class Training extends Entity {
 
     private String typeTraining;
-
-
 
     public String getTypeTraining() {
         return typeTraining;

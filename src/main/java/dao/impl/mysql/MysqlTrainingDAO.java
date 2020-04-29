@@ -1,5 +1,6 @@
 package dao.impl.mysql;
 
+import dao.TrainingDAO;
 import dao.exception.DAOException;
 import db.ConnectionHolder;
 import db.DBUtil;
@@ -15,7 +16,7 @@ public class MysqlTrainingDAO implements TrainingDAO {
     private static MysqlTrainingDAO trainingDAO;
     private static final Logger LOG = Logger.getLogger(MysqlSubscriptionDAO.class.getName());
 
-    private static final String CREATE_TRAINING = "INSERT INTO training(id,type_training)VALUES(?,?)";
+    private static final String CREATE_TRAINING = "INSERT INTO training(type_training)VALUES(?)";
     private static final String DELETE_BY_ORDER_TRAINING = "DELETE  FROM training WHERE id=?";
     private static final String GET_TRAINING = "SELECT * FROM training WHERE id = ?";
     private static final String UPDATE_TRAINING= "UPDATE training SET  type_training=? WHERE id=?";
@@ -37,13 +38,13 @@ public class MysqlTrainingDAO implements TrainingDAO {
             connection=ConnectionHolder.getConnection();
             preparedStatement=connection.prepareStatement(CREATE_TRAINING,preparedStatement.RETURN_GENERATED_KEYS);
             int k=0;
-            preparedStatement.setInt(++k,training.getId());
+
             preparedStatement.setString(++k,training.getTypeTraining());
             resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
                 key = resultSet.getInt(1);
             } else {
-                throw new SQLException("Creating training failed, no ID obtained.");
+                throw new DAOException("Creating training failed, no ID obtained.");
             }
 
         } catch (SQLException e){
@@ -93,7 +94,8 @@ public class MysqlTrainingDAO implements TrainingDAO {
             preparedStatement.setInt(++k,training.getId());
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            LOG.info("Can not update training." );
+            throw new DAOException(e.getMessage());
 
         }finally {
             DBUtil.closeStatement(preparedStatement);
@@ -110,7 +112,8 @@ public class MysqlTrainingDAO implements TrainingDAO {
             preparedStatement.setInt(1, key);
             preparedStatement.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            LOG.info("Can not delete training." );
+            throw new DAOException(e.getMessage());
         }finally {
             DBUtil.closeStatement(preparedStatement);
         }
